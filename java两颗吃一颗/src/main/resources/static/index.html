@@ -1,0 +1,242 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+</head>
+<body style="overflow: hidden;background-color: black;margin: 0;">
+<div style="text-align: center;">
+    <canvas id="mycanvas"
+            style="background-image: url('res/board.jpg');background-size: cover;text-align: center "></canvas>
+</div>
+<audio src="res/die.mp3" id="die" preload="auto"></audio>
+<audio src="res/move.mp3" id="move" preload="auto"></audio>
+<audio src="res/lose.mp3" id="lose" preload="auto"></audio>
+<audio src="res/over.mp3" id="over" preload="auto"></audio>
+<audio src="res/start.mp3" id="start" preload="auto"></audio>
+</body>
+<script>
+    var mycanvas = document.getElementById("mycanvas")
+    var canvas = mycanvas.getContext('2d');
+    var a = []
+    var isMoving = -1
+    var whoseTurn = 1
+    var gameState = 0
+    var tutorialData = [
+        {"state": "0000002000100001", "moves": [[3, 3, 3, 2]], "text": "两颗吃一颗"},
+        {"state": "0020001000000010", "moves": [[3, 2, 2, 2]], "text": "两颗吃一颗"},
+        {"state": "0020001021010000", "moves": [[2, 3, 2, 2]], "text": "一次可以吃两颗"},
+        {"state": "1022000000000000", "moves": [[0, 0, 0, 1]], "text": "主动凑上去不算死"},
+        {"state": "1021020000000000", "moves": [[1, 1, 0, 1]], "text": "一行有四颗不算死"},
+        {"state": "1022010000000000", "moves": [[1, 1, 0, 1]], "text": "一行有四颗不算死"}
+    ]
+    function tutorial(id) {
+        if (typeof(id) == "undefined")id = 0
+        if (id == tutorialData.length) {
+            main()
+            return;
+        }
+        a = stringToMap(tutorialData[id]["state"])
+        paint()
+        setTimeout(function () {
+            moves = tutorialData[id]["moves"]
+            move(moves[0][0], moves[0][1], moves[0][2], moves[0][3])
+            canvas.fillStyle = "purple"
+            drawString(tutorialData[id]["text"])
+            setTimeout(function () {
+                tutorial(id + 1)
+            }, 1500)
+        }, 2000)
+    }
+    function init() {//每次游戏开始都要进行初始化
+        a = stringToMap("2222000000001111")
+        isMoving = -1
+        gameState = 0
+        sound("start")
+    }
+    function getDelta() {
+        return mycanvas.width / 11
+    }
+    function paint() {//画图
+        mycanvas.width = mycanvas.height = Math.min(window.innerHeight, window.innerWidth)
+        canvas.clearRect(0, 0, mycanvas.width, mycanvas.height)
+        for (var i in a) {
+            if (a[i] == 0)continue
+            var x = Math.floor(i / 4), y = i % 4
+            canvas.beginPath()
+            canvas.arc((1 + 3 * y) * getDelta(), (1 + 3 * x) * getDelta(), isMoving == i ? getDelta()*3 / 4 : getDelta()*3 / 5, 0, 2 * Math.PI, false)
+            canvas.closePath()
+            canvas.fillStyle = (a[i] == 1 ? "black" : "white")
+            canvas.fill()
+        }
+    }
+    function dis(x, y, xx, yy) {
+        return Math.sqrt(Math.pow(x - xx, 2) + Math.pow(y - yy, 2))
+    }
+    function over(map) {
+        var cnt = 0
+        for (var i in a) {
+            if (map[i] == 1) {
+                cnt++
+                if (cnt > 1)return false
+            }
+        }
+        return true
+    }
+    function drawString(s) {
+        var l = 3, r = 50
+        while (l < r) {
+            var mid = Math.floor((l + r) / 2)
+            canvas.font = mid + "px Consolas"
+            var w = canvas.measureText(s).width
+            if (w > mycanvas.width * 0.8) {
+                r = mid
+            } else {
+                l = mid + 1
+            }
+        }
+        canvas.fillText(s, (mycanvas.width - canvas.measureText(s).width) / 2, mycanvas.width / 2)
+    }
+    function lose() {
+        sound("over")
+        canvas.fillStyle = "purple"
+        drawString("You Lose,Click To Restart")
+        gameState = -1
+    }
+    function mapToInt(a) {
+        var ans = 0
+        for (var i = 0; i < 16; i++) {
+            ans += a[i] * Math.pow(3, i)
+        }
+        return ans
+    }
+    function stringToMap(s) {
+        var a = new Array()
+        for (var i = 0; i < 16; i++) {
+            a[i] = parseInt(s[i])
+        }
+        return a
+    }
+    function intToMap(x) {
+        var a = new Array()
+        for (var i = 0; i < 16; i++) {
+            a[i] = x % 3
+            x = Math.floor(x / 3)
+        }
+        return a
+    }
+    function reverse(a) {
+        var ans = new Array()
+        for (var i = 0; i < 16; i++) {
+            ans[i] = a[i] == 0 ? 0 : 3 - a[i]
+        }
+        return ans
+    }
+    function computerMove(oldMap, newMap) {
+        var o = -1, n = -1
+        for (var i = 0; i < 16; i++) {
+            if (oldMap[i] == 0 && newMap[i] == 1)n = i
+            if (oldMap[i] == 1 && newMap[i] == 0)o = i
+        }
+        move(Math.floor(o / 4), o % 4, Math.floor(n / 4), n % 4)
+    }
+    function computer() {
+        var req = new XMLHttpRequest()
+        req.open("GET", "haha?state=" + mapToInt(reverse(a)))
+        req.send()
+        req.onreadystatechange = function () {
+            if (req.readyState == 4 && req.status == 200) {
+                var ans = parseInt(req.responseText)
+                if (isNaN(ans)) {
+                    window.close()
+                } else {
+                    computerMove(reverse(a), reverse(intToMap(Math.floor(ans / 3))))
+                    var temp = gameState
+                    gameState = ans % 3
+                    if (temp == 0 && gameState == 1)
+                        sound("lose")
+                    whoseTurn = 3 - whoseTurn
+                    if (over(a)) {
+                        lose()
+                    }
+                }
+            }
+        }
+    }
+    function move(oldx, oldy, newx, newy) {
+        sound("move")
+        var o = oldx * 4 + oldy, n = newx * 4 + newy
+        a[n] = a[o]
+        a[o] = 0
+        isMoving = -1
+        afterMove(newx, newy)
+        paint()
+    }
+    function afterMove(x, y) {
+        var b = a[x * 4 + y] == 2 ? reverse(a) : a
+        xx = b[x * 4] * 27 + b[x * 4 + 1] * 9 + b[x * 4 + 2] * 3 + b[x * 4 + 3]
+        yy = b[y] * 27 + b[y + 4] * 9 + b[y + 8] * 3 + b[y + 12]
+        state_diedChess = [66, 22, 42, 14]
+        if (state_diedChess.indexOf(xx) != -1) {
+            remove_chess(x, state_diedChess.indexOf(xx))
+        }
+        if (state_diedChess.indexOf(yy) != -1) {
+            remove_chess(state_diedChess.indexOf(yy), y)
+        }
+    }
+    function remove_chess(x, y) {
+        a[x * 4 + y] = 0
+        sound("die")
+    }
+    function sound(id) {
+        document.getElementById(id).play()
+    }
+    function clk(e) {
+        if (gameState == -1) {
+            init()
+            paint()
+            return
+        }
+        if (whoseTurn != 1)return
+        var y = Math.round((e.offsetX / getDelta() - 1) / 3), x = Math.round((e.offsetY / getDelta() - 1) / 3)
+        var id = x * 4 + y
+        if (id < 0 || id > 15)return
+        if (a[id] == 2)return
+        if (a[id] == 1) {
+            if (isMoving) {
+                if (isMoving == id) {
+                    isMoving = -1
+                } else {
+                    isMoving = id
+                }
+            } else {
+                isMoving = id
+            }
+            paint()
+        } else if (a[id] == 0) {
+            var oldx = Math.floor(isMoving / 4), oldy = isMoving % 4
+            if (isMoving != -1 && dis(x, y, oldx, oldy) <= 1.2) {
+                move(oldx, oldy, x, y)
+                whoseTurn = 3 - whoseTurn
+                setTimeout(function () {
+                    computer()
+                }, 1000)
+            }
+        }
+    }
+    function main() {
+        init()
+        paint()
+        mycanvas.onclick = clk
+        document.body.addEventListener('touchmove', function (event) {
+            event.preventDefault()
+        }, false)
+        window.addEventListener("resize", paint, false)
+    }
+    if (localStorage.hasLearned) {
+        main()
+    } else {
+        localStorage.hasLearned = true
+        tutorial()
+    }
+</script>
+</html>
