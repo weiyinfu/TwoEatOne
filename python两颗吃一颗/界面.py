@@ -2,6 +2,7 @@ import math
 import tkinter
 import tkinter.messagebox as box
 import winsound
+import numpy as np
 
 
 def load():
@@ -28,25 +29,32 @@ canvas.pack()
 isMoving = None
 chess_size = 30
 win_lose = 0
+init_board_state = '2112212100000000'
+
+
+def grid_pos(x, y):
+    return 50 + 150 * x, 50 + y * 150
 
 
 def init():
     global isMoving, win_lose, board, chess
     for i in chess: canvas.delete(i)
-    board = [2] * 4 + [0] * 8 + [1] * 4
+    board = list(map(lambda x: int(x), init_board_state))
     isMoving = None
     win_lose = 0
     chess = []
+    """
+    画四条线组成棋盘
+    """
     for i in range(4):
         canvas.create_line(50, 50 + i * 150, 500, 50 + i * 150, width=4)
         canvas.create_line(50 + i * 150, 50, 50 + i * 150, 500, width=4)
 
-    for i in range(4):
-        x, y = 50 + 150 * i, 50
-        c = canvas.create_oval(x - chess_size, y - chess_size, x + chess_size, y + chess_size, fill='white')
-        chess.append(c)
-        x, y = 50 + 150 * i, 500
-        c = canvas.create_oval(x - chess_size, y - chess_size, x + chess_size, y + chess_size, fill='black')
+    # 画棋子
+    for i in range(16):
+        if board[i] == 0: continue
+        x, y = grid_pos(i % 4, i // 4)
+        c = canvas.create_oval(x - chess_size, y - chess_size, x + chess_size, y + chess_size, fill='white' if board[i] == 2 else 'black')
         chess.append(c)
     play_sound('start')
 

@@ -1,36 +1,14 @@
-import tensorflow as tf
-import numpy as np
 import logging
+
+import tensorflow as tf
+
+from data import get_data
 
 file_handler = logging.FileHandler("haha.log", "w", "utf8")
 file_handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
 logging.getLogger().addHandler(file_handler)
 logging.getLogger().setLevel(logging.INFO)
 MODEL_PATH = "model/haha.ckpt"
-
-
-def get_data(shuffle=True):
-    a = np.fromfile("2eat1.bin", np.int)
-    x = a // 3
-    y = a % 3
-    # onehot
-    yy = np.zeros((len(y), 3))
-    yy[y == 0, 0] = 1
-    yy[y == 1, 1] = 1
-    yy[y == 2, 2] = 1
-    # 扩展x
-    mask = np.tile(3 ** np.arange(16), (len(x), 1))
-    xx = np.tile(x, (16, 1)).T // mask % 3
-    # 打乱顺序
-    if shuffle:
-        arg = np.arange(len(x))
-        np.random.shuffle(arg)
-        xx = xx[arg]
-        yy = yy[arg]
-    # 中心化一下
-    xx = xx.astype(np.float32)
-    xx -= np.mean(xx, axis=0)
-    return xx, yy
 
 
 def get_layer(input, input_cnt, output_cnt, use_activite=True):

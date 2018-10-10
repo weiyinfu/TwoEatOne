@@ -1,14 +1,13 @@
 import numpy as np
 from sklearn import tree
 from sklearn.externals import joblib
+from data import get_data
 
 """
 实践证明，决策树导出之后12M，几乎没有压缩
 正确率那肯定是百分之百
 """
-a = np.fromfile("res/table.txt", np.int32)
-x = a[np.arange(len(a) // 2) * 2]
-y = a[np.arange(len(a) // 2) * 2 + 1] % 3
+x, y = get_data(False, False, "filename.bin")
 big = np.repeat(x[:, np.newaxis], repeats=16, axis=1)
 mask = 3 ** np.repeat(np.arange(16)[np.newaxis, :], repeats=len(x), axis=0)
 x = big // mask % 3
