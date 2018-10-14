@@ -25,8 +25,8 @@ def pca_2d():
     x = np.tile(x, (16, 1)).transpose() // mask % 3
     # PCA降维到二维空间进行显示
     pca = PCA(2, whiten=True)
-    x = x[:1000]
-    y = y[:1000]
+    x = x[:100]
+    y = y[:100]
     x = pca.fit_transform(x, y)
     fig, axes = plt.subplots(2, 2)
     axes = axes.ravel()

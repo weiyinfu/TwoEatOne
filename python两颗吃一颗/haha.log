@@ -1,0 +1,10 @@
+2018-10-13 01:45:38,466 From C:/Users/weidiao/Desktop/TwoEatOne/python两颗吃一颗/全连接神经网络.py:33: softmax_cross_entropy_with_logits (from tensorflow.python.ops.nn_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+
+Future major versions of TensorFlow will allow gradients to flow
+into the labels input on backprop by default.
+
+See @{tf.nn.softmax_cross_entropy_with_logits_v2}.
+
+2018-10-13 01:46:04,023 0 0.8052372009758324
+2018-10-13 01:48:44,540 10 0.8223002264071467

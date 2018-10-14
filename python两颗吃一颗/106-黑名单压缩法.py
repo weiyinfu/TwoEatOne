@@ -28,8 +28,8 @@ rules = [
     (lambda ind: black_chess_count[ind] > white_chess_count[ind], 1),
     (lambda ind: black_chess_count[ind] < white_chess_count[ind], 2),
     (lambda ind: white_space_count[ind] < black_space_count[ind], 1),
-    (lambda ind: white_dis[ind] > black_dis[ind], 1),
-    (lambda ind: white_dis[ind] == black_dis[ind] and white_chess_count[ind] == black_chess_count[ind] and white_space_count[ind] == black_space_count[ind], 1),
+    (lambda ind: black_chess_count[ind] == white_chess_count[ind] and white_dis[ind] > black_dis[ind], 1),
+    (lambda ind:  white_chess_count[ind] == black_chess_count[ind] and white_space_count[ind] == black_space_count[ind], 1),
     (lambda ind: True, 2),
 ]
 error = [0] * len(rules)

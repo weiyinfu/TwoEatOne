@@ -1,6 +1,4 @@
 **/.iml
 **/.idea/
-**/table.txt
-**/table.bin
-**/a.exe
+**/*.exe
 **/*.bin

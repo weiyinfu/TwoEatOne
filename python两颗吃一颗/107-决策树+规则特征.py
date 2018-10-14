@@ -17,7 +17,7 @@ rules = np.array([
     black_space_count - white_space_count,
     black_dis - white_dis
 ]).T
-print(x.shape,feature.shape,rules.shape)
+print(x.shape, feature.shape, rules.shape)
 x = np.hstack((x, feature, rules))
 print(x.shape)
 his = DecisionTreeClassifier()
@@ -25,3 +25,10 @@ his.fit(rules, y)
 print("his", his.tree_.node_count)
 yy = his.predict(rules)
 print(np.count_nonzero(yy == y))
+"""
+决策树需要1185条规则才能够建立起64885的黑名单
+(284885, 16) (284885, 6) (284885, 3)
+(284885, 25)
+his 1185
+220815
+"""

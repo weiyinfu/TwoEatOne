@@ -37,8 +37,8 @@ accuracy = tf.reduce_sum(tf.cast(tf.equal(tf.argmax(y_output, axis=1), tf.argmax
 initializer = tf.global_variables_initializer()
 
 x, y = get_data()
-x = x[:10000]
-y = y[:10000]
+# x = x[:10000]
+# y = y[:10000]
 BATCHSIZE = 120
 
 
