@@ -29,7 +29,7 @@ canvas.pack()
 isMoving = None
 chess_size = 30
 win_lose = 0
-init_board_state = '2112212100000000'
+init_board_state = '2222000000001111'
 
 
 def grid_pos(x, y):
