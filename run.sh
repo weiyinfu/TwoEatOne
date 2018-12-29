@@ -1,6 +1,6 @@
-g++ cpp两颗吃一颗打表器/main.cpp
+g++ cpp两颗吃一颗打表器/main.cpp -o a.out
 echo 正在生成数据
-a
+./a.out
 cd python两颗吃一颗
 echo 正在压缩数据
 python 102-八种等价关系.py

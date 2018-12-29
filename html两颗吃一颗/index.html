@@ -83,7 +83,6 @@
 
     function paint() {//画图
         mycanvas.width = mycanvas.height = Math.min(window.innerHeight, window.innerWidth)
-        console.log(mycanvas.width+" "+mycanvas.height)
         canvas.clearRect(0, 0, mycanvas.width, mycanvas.height)
         for (var i in a) {
             if (a[i] == 0) continue
