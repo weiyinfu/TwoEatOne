@@ -56,14 +56,21 @@ def test(x, i):
     return cnt
 
 
-with open("2eat1.bin", "wb") as f:
+def main():
     # 从小到大一次遍历
+    a = []
     for i in tqdm.tqdm(range(len(xx))):
         if i != father[i]:
             # 如果已经被前面的状态包含了,不处理此状态
             continue
         test(xx[i], i)  # 旋转4次并更新状态
         test(flip_h(xx[i]), i)  # 先水平翻转在旋转4次
-        f.write(x[i] * 3 + y[i])
-# 压缩之后的状态个数
-print(np.count_nonzero(father == np.arange(len(x))))
+        a.append(x[i] * 3 + y[i])
+    a = np.array(a, dtype=np.int32)
+    a.tofile("2eat1.bin")
+    # 压缩之后的状态个数
+    print(np.count_nonzero(father == np.arange(len(x))))
+
+
+if __name__ == '__main__':
+    main()

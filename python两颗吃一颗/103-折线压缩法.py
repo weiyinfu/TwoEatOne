@@ -101,9 +101,11 @@ def export():
     xx, yy = build()
     # test_right(xx, yy)
     print(len(yy) * 4)
-    with open("compress.bin", "wb") as f:
-        for i in range(len(yy)):
-            f.write(xx[i] * 3 + yy[i])
+    a = []
+    for i in range(len(yy)):
+        a.append(xx[i] * 3 + yy[i])
+    a = np.array(a, np.int32)
+    a.tofile("compress.bin")
 
 
 export()
