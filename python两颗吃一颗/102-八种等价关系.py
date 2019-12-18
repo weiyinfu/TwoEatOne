@@ -7,9 +7,9 @@ x, y = a[np.arange(0, len(a) >> 1) * 2], a[np.arange(0, len(a) >> 1) * 2 + 1] % 
 mask = 3 ** np.tile(np.arange(16), (len(x), 1))
 xx = np.tile(x, (16, 1)).transpose() // mask % 3
 xx = xx.reshape(-1, 4, 4)
-ind = dict((x[i], i) for i in range(len(x)))
+ind = {x[i]: i for i in range(len(x))}
 father = np.arange(len(x))  # 每个人的父亲都是自己
-sons_count = [0] * len(x)  # 每个人的儿子书
+sons_count = [0] * len(x)  # 每个人的儿子个数
 tonum = lambda x: np.sum(x.reshape(-1) * 3 ** np.arange(16))  # 把局面转成数字
 print("原来的局面总数", len(x))
 
@@ -72,5 +72,5 @@ def main():
     print(np.count_nonzero(father == np.arange(len(x))))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

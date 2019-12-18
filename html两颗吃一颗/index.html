@@ -1,22 +1,20 @@
 <html>
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 </head>
+
 <body style="overflow: hidden;background-color: black;margin: 0;">
-    <div id="loading" style="position:fixed;display:block;width:100%;height:100%;text-align: center;background-color:grey;opacity: 0.7;">
-        <img src="res/loading.gif" style=" top:20%;position:relative;max-width:30%;max-height: 30%">
-    </div>
     <div style="text-align: center;">
-    <canvas id="mycanvas"
+        <canvas id="mycanvas"
             style="background-image: url('board.svg');background-size: cover;text-align: center "></canvas>
-</div>
-<audio src="res/die.mp3" id="die" preload="auto"></audio>
-<audio src="res/move.mp3" id="move" preload="auto"></audio>
-<audio src="res/lose.mp3" id="lose" preload="auto"></audio>
-<audio src="res/over.mp3" id="over" preload="auto"></audio>
-<audio src="res/start.mp3" id="start" preload="auto"></audio>
+    </div>
+    <audio src="res/die.mp3" id="die" preload="auto"></audio>
+    <audio src="res/move.mp3" id="move" preload="auto"></audio>
+    <audio src="res/lose.mp3" id="lose" preload="auto"></audio>
+    <audio src="res/over.mp3" id="over" preload="auto"></audio>
+    <audio src="res/start.mp3" id="start" preload="auto"></audio>
 </body>
 <script>
     var mycanvas = document.getElementById("mycanvas")
@@ -25,16 +23,14 @@
     var isMoving = -1//当前正在移动的棋子
     var whoseTurn = 1//当前轮到谁走子
     var gameState = 0//游戏状态，0和，1胜，2败
-    var xdata, ydata//数据表，游戏状态和状态类别
     var tutorialData = [
-        {"state": "0000002000100001", "moves": [[3, 3, 3, 2]], "text": "两颗吃一颗"},
-        {"state": "0020001000000010", "moves": [[3, 2, 2, 2]], "text": "两颗吃一颗"},
-        {"state": "0020001021010000", "moves": [[2, 3, 2, 2]], "text": "一次可以吃两颗"},
-        {"state": "1022000000000000", "moves": [[0, 0, 0, 1]], "text": "主动凑上去不算死"},
-        {"state": "1021020000000000", "moves": [[1, 1, 0, 1]], "text": "一行有四颗不算死"},
-        {"state": "1022010000000000", "moves": [[1, 1, 0, 1]], "text": "一行有四颗不算死"}
+        { "state": "0000002000100001", "moves": [[3, 3, 3, 2]], "text": "两颗吃一颗" },
+        { "state": "0020001000000010", "moves": [[3, 2, 2, 2]], "text": "两颗吃一颗" },
+        { "state": "0020001021010000", "moves": [[2, 3, 2, 2]], "text": "一次可以吃两颗" },
+        { "state": "1022000000000000", "moves": [[0, 0, 0, 1]], "text": "主动凑上去不算死" },
+        { "state": "1021020000000000", "moves": [[1, 1, 0, 1]], "text": "一行有四颗不算死" },
+        { "state": "1022010000000000", "moves": [[1, 1, 0, 1]], "text": "一行有四颗不算死" }
     ]
-
     //加载游戏表格数据
     function loadIntArray(url, callback) {
         var req = new XMLHttpRequest()
@@ -47,9 +43,8 @@
             }
         }
     }
-
     function tutorial(id) {
-        if (typeof(id) == "undefined") id = 0
+        if (typeof (id) == "undefined") id = 0
         if (id == tutorialData.length) {
             main()
             return;
@@ -66,7 +61,6 @@
             }, 1500)
         }, 2000)
     }
-
     /**
      * 棋盘布局的最小单位是11，中间3个大空宽度为3，两边空白处宽度各为1
      * */
@@ -76,11 +70,9 @@
         gameState = 0
         sound("start")
     }
-
     function getDelta() {
         return mycanvas.width / 11
     }
-
     function paint() {//画图
         mycanvas.width = mycanvas.height = Math.min(window.innerHeight, window.innerWidth)
         canvas.clearRect(0, 0, mycanvas.width, mycanvas.height)
@@ -94,11 +86,9 @@
             canvas.fill()
         }
     }
-
     function dis(x, y, xx, yy) {
         return Math.sqrt(Math.pow(x - xx, 2) + Math.pow(y - yy, 2))
     }
-
     /**
      * 判断游戏是否结束：即判断黑棋是否已经输了
      * */
@@ -112,7 +102,6 @@
         }
         return true
     }
-
     function drawString(s) {
         var l = 3, r = 50
         while (l < r) {
@@ -127,14 +116,12 @@
         }
         canvas.fillText(s, (mycanvas.width - canvas.measureText(s).width) / 2, mycanvas.width / 2)
     }
-
     function lose() {
         sound("over")
         canvas.fillStyle = "purple"
         drawString("You Lose,Click To Restart")
         gameState = -1
     }
-
     /**
      * 棋盘状态转换为int
      * */
@@ -145,7 +132,6 @@
         }
         return ans
     }
-
     /**
      * 字符串转换为棋盘
      * */
@@ -156,7 +142,6 @@
         }
         return a
     }
-
     /**
      * int转换为棋盘
      * */
@@ -168,7 +153,6 @@
         }
         return a
     }
-
     /**
      * 局面翻转：黑子变成白子，白子变成黑子
      * */
@@ -179,7 +163,6 @@
         }
         return ans
     }
-
     /**
      * 给出两个棋盘，找出移动的黑子
      * */
@@ -191,7 +174,6 @@
         }
         return [Math.floor(o / 4), o % 4, Math.floor(n / 4), n % 4]
     }
-
     //水平翻转棋盘
     function flip(a) {
         var b = new Array(16)
@@ -202,7 +184,6 @@
         }
         return b
     }
-
     //矩阵旋转
     function rotate(a) {
         var m = new Array(16)
@@ -213,7 +194,6 @@
         }
         return m
     }
-
     //求状态a的最小等价状态
     function hash(a) {
         var m = intToMap(a)
@@ -231,27 +211,6 @@
         return ans
     }
 
-    function bisearch(x, y, q) {
-        var l = 0, r = x.length
-        while (l < r) {
-            var m = (l + r) >> 1
-            if (x[m] > q) {
-                r = m
-            } else if (x[m] < q) {
-                l = m + 1
-            } else {
-                return y[m]
-            }
-        }
-        return y[l - 1]
-    }
-
-    /**
-     * 预测状态的类别
-     * */
-    function predict(x) {
-        return bisearch(xdata, ydata, hash(x))
-    }
 
     /**
      * 给定棋盘a和棋子移动方向(fx，fy)->(tx,ty)
@@ -273,11 +232,9 @@
         }
         return mapToInt(reverse(b))
     }
-
     function legal(x, y) {
         return x < 4 && y < 4 && x >= 0 && y >= 0
     }
-
     /**
      * 生成全部的着法，一个int列表
      * */
@@ -300,26 +257,6 @@
         return ans
     }
 
-    function computer() {
-        var allMoves = generateAllMoves(reverse(a))
-        var moves = new Array(3)
-        for (var i = 0; i < 3; i++) moves[i] = new Array()
-        for (var i = 0; i < allMoves.length; i++) {
-            var mo = allMoves[i]
-            var res = predict(mo)
-            moves[res].push(mo)
-        }
-        var ansMove = null
-        if (moves[2].length) {
-            ansMove = moves[2][Math.floor(Math.random() * moves[2].length)]
-        } else if (moves[0].length) {
-            ansMove = moves[0][Math.floor(Math.random() * moves[0].length)]
-        } else {
-            ansMove = moves[1][Math.floor(Math.random() * moves[1].length)]
-        }
-        return findMove(reverse(a), reverse(intToMap(ansMove)))
-    }
-
     function move(oldx, oldy, newx, newy) {
         sound("move")
         var o = oldx * 4 + oldy, n = newx * 4 + newy
@@ -329,29 +266,25 @@
         afterMove(newx, newy)
         paint()
     }
-
     function afterMove(x, y) {
         var b = a[x * 4 + y] == 2 ? reverse(a) : a
         xx = b[x * 4] * 27 + b[x * 4 + 1] * 9 + b[x * 4 + 2] * 3 + b[x * 4 + 3]
         yy = b[y] * 27 + b[y + 4] * 9 + b[y + 8] * 3 + b[y + 12]
         state_diedChess = [66, 22, 42, 14]
         if (state_diedChess.indexOf(xx) != -1) {
-            remove_chess(x, state_diedChess.indexOf(xx))
+            removeChess(x, state_diedChess.indexOf(xx))
         }
         if (state_diedChess.indexOf(yy) != -1) {
-            remove_chess(state_diedChess.indexOf(yy), y)
+            removeChess(state_diedChess.indexOf(yy), y)
         }
     }
-
-    function remove_chess(x, y) {
+    function removeChess(x, y) {
         a[x * 4 + y] = 0
         sound("die")
     }
-
     function sound(id) {
         document.getElementById(id).play()
     }
-
     function clk(e) {
         if (gameState == -1) {
             init()
@@ -380,10 +313,10 @@
                 move(oldx, oldy, x, y)
                 whoseTurn = 3 - whoseTurn
                 setTimeout(function () {
-                    var pos = computer()
+                    var pos = ai.computer()
                     move(pos[0], pos[1], pos[2], pos[3])
                     var temp = gameState
-                    gameState = predict(mapToInt(a))
+                    gameState = ai.predict(mapToInt(a))
                     if (temp == 0 && gameState == 2)
                         sound("lose")
                     whoseTurn = 3 - whoseTurn
@@ -395,26 +328,111 @@
         }
     }
 
+    const AI = {
+        /*
+        * 折线压缩法的AI
+        * AI体积足够小，但是AI并不急于求胜
+        */
+        brokenLine: {
+            xdata: null, ydata: null,//数据表，游戏状态和状态类别
+            computer() {
+                var allMoves = generateAllMoves(reverse(a))
+                var moves = new Array(3)
+                for (var i = 0; i < 3; i++) moves[i] = new Array()
+                for (var i = 0; i < allMoves.length; i++) {
+                    var mo = allMoves[i]
+                    var res = this.predict(mo)
+                    moves[res].push(mo)
+                }
+                var ansMove = null
+                if (moves[2].length) {
+                    ansMove = moves[2][Math.floor(Math.random() * moves[2].length)]
+                } else if (moves[0].length) {
+                    ansMove = moves[0][Math.floor(Math.random() * moves[0].length)]
+                } else {
+                    ansMove = moves[1][Math.floor(Math.random() * moves[1].length)]
+                }
+                return findMove(reverse(a), reverse(intToMap(ansMove)))
+            },
+            /**
+             * 预测状态的类别
+             * */
+            predict(x) {
+                function bisearch(x, y, q) {
+                    var l = 0, r = x.length
+                    while (l < r) {
+                        var m = (l + r) >> 1
+                        if (x[m] > q) {
+                            r = m
+                        } else if (x[m] < q) {
+                            l = m + 1
+                        } else {
+                            return y[m]
+                        }
+                    }
+                    return y[l - 1]
+                }
+                return bisearch(this.xdata, this.ydata, hash(x))
+            },
+            load() {
+                loadIntArray("compress.bin", resp => {
+                    this.xdata = new Int32Array(resp)
+                    this.ydata = new Array(this.xdata.length)
+                    for (var i = 0; i < this.xdata.length; i++) {
+                        this.ydata[i] = this.xdata[i] % 3
+                        this.xdata[i] = Math.floor(this.xdata[i] / 3)
+                    }
+                })
+            }
+        },
+        /*
+        * 全部表，x表示棋盘状态，y表示下一状态+胜负状态
+        */
+        fullTable: {
+            xdata: null,
+            ydata: null,
+            load() {
+                loadIntArray("../table.bin", resp => {
+                    const allData = new Int32Array(resp)
+                    const size = Math.floor(allData.length / 2)
+                    this.xdata = new Int32Array(size)
+                    this.ydata = new Array(size)
+                    for (var i = 0; i < size; i++) {
+                        this.xdata[i] = allData[i << 1];
+                        this.ydata[i] = allData[i << 1 | 1];
+                    }
+                })
+            },
+            predict(x) {
+                const ind = this.xdata.indexOf(x)
+                const y = this.ydata[ind]
+                return y % 3;
+            },
+            computer() {
+                const ind = this.xdata.indexOf(mapToInt(reverse(a)))
+                const y = this.ydata[ind]
+                const ansMap = Math.floor(y / 3)
+                return findMove(reverse(a), reverse(intToMap(ansMap)))
+            }
+        }
+    }
+    var ai = null
     function main() {
+        const queryIndex = location.href.indexOf('?')//如果有query，那么使用艰难模式
+        if (queryIndex == -1) {
+            ai = AI.brokenLine
+        } else {
+            ai = AI.fullTable
+        }
         init()
         paint()
-        loadIntArray("compress.bin", function (resp) {
-            document.querySelector("#loading").style.display="none"
-            xdata = new Int32Array(resp)
-            ydata = new Array(xdata.length)
-            for (var i = 0; i < xdata.length; i++) {
-                ydata[i] = xdata[i] % 3
-                xdata[i] = Math.floor(xdata[i] / 3)
-            }
-        })
+        ai.load()
         mycanvas.onclick = clk
         document.body.addEventListener('touchmove', function (event) {
             event.preventDefault()
         }, false)
         window.addEventListener("resize", paint, false)
     }
-
-
     if (localStorage.hasLearned) {
         main()
     } else {
@@ -422,4 +440,5 @@
         tutorial()
     }
 </script>
+
 </html>
