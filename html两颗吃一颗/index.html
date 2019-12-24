@@ -336,20 +336,39 @@
         brokenLine: {
             xdata: null, ydata: null,//数据表，游戏状态和状态类别
             computer() {
-                var allMoves = generateAllMoves(reverse(a))
-                var moves = new Array(3)
+                var allMoves = generateAllMoves(reverse(a))//生成走法时，只能生成黑子的走法，而当前局面轮到白子（计算机）走子，所以应该reverse一下，最后产生的局面是轮到黑子先行
+                var moves = new Array(3)//三种结果0,1,2，跟据这三个数组就能判定当前局势，0表示和棋，1表示必胜，2表示必败
                 for (var i = 0; i < 3; i++) moves[i] = new Array()
                 for (var i = 0; i < allMoves.length; i++) {
                     var mo = allMoves[i]
                     var res = this.predict(mo)
                     moves[res].push(mo)
                 }
+                //最终的走法
                 var ansMove = null
                 if (moves[2].length) {
-                    ansMove = moves[2][Math.floor(Math.random() * moves[2].length)]
+                    //如果存在必胜策略，那么优先走必胜的策略，走必胜策略时，优先走吃子的那一种
+                    var minBlack = 1e9
+                    var blackCount2Moves = {}//建立黑子个数到走法的映射
+                    for (var move of moves[2]) {
+                        var chessMap = intToMap(move)
+                        var blackCount = chessMap.filter(x => x == 1).length
+                        if (minBlack > blackCount) {
+                            minBlack = blackCount
+                        }
+                        if (!blackCount2Moves[blackCount]) {
+                            blackCount2Moves[blackCount] = [move]
+                        } else {
+                            blackCount2Moves[blackCount].push(move)
+                        }
+                    }
+                    var validMoves = blackCount2Moves[minBlack]
+                    ansMove = validMoves[Math.floor(Math.random() * validMoves.length)]
                 } else if (moves[0].length) {
+                    //如果存在和棋策略，那么就走和棋的一步
                     ansMove = moves[0][Math.floor(Math.random() * moves[0].length)]
                 } else {
+                    //如果只剩下必败策略，那么只能走必败策略
                     ansMove = moves[1][Math.floor(Math.random() * moves[1].length)]
                 }
                 return findMove(reverse(a), reverse(intToMap(ansMove)))
